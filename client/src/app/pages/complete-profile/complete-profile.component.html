@@ -1,0 +1,82 @@
+<div class="row justify-content-center mt-4">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card">
+      <div class="card-body p-4">
+        <h1 class="h3 mb-2 text-center">Complete your profile</h1>
+        <p class="text-muted mb-4 text-center">
+          This information is used to calculate your daily calorie goal (~500 kcal/day deficit).
+        </p>
+
+        <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <div class="mb-3">
+            <label class="form-label" for="name">Name</label>
+            <input id="name" type="text" class="form-control" formControlName="name">
+            <div class="form-text text-danger" *ngIf="form.get('name')?.touched && form.get('name')?.invalid">
+              Name must be at least 2 characters long.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="gender">Gender</label>
+            <select id="gender" class="form-select" formControlName="gender">
+              <option value="" disabled selected>Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            <div class="form-text text-danger" *ngIf="form.get('gender')?.touched && form.get('gender')?.invalid">
+              Please select a gender.
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label class="form-label" for="age">Age (years)</label>
+              <input id="age" type="number" class="form-control" formControlName="age">
+              <div class="form-text text-danger" *ngIf="form.get('age')?.touched && form.get('age')?.invalid">
+                Age must be between 10 and 100.
+              </div>
+            </div>
+
+            <div class="col-6 mb-3">
+              <label class="form-label" for="heightCm">Height (cm)</label>
+              <input id="heightCm" type="number" class="form-control" formControlName="heightCm">
+              <div class="form-text text-danger" *ngIf="form.get('heightCm')?.touched && form.get('heightCm')?.invalid">
+                Height must be between 100 and 250 cm.
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="weightKg">Current weight (kg)</label>
+            <input id="weightKg" type="number" class="form-control" formControlName="weightKg">
+            <div class="form-text text-danger" *ngIf="form.get('weightKg')?.touched && form.get('weightKg')?.invalid">
+              Weight must be between 30 and 300 kg.
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label" for="activityLevel">Activity level</label>
+            <select id="activityLevel" class="form-select" formControlName="activityLevel">
+              <option value="" disabled selected>Select activity level</option>
+              <option value="sedentary">Sedentary (little or no exercise)</option>
+              <option value="light">Lightly active (1-3 days/week)</option>
+              <option value="moderate">Moderately active (3-5 days/week)</option>
+              <option value="active">Very active (6-7 days/week)</option>
+            </select>
+            <div class="form-text text-danger" *ngIf="form.get('activityLevel')?.touched && form.get('activityLevel')?.invalid">
+              Please select an activity level.
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Saving...' : 'Save profile' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
+  <rect width="320" height="320" fill="#fbefc7" />
+  <g font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle" fill="#3b2e22" opacity="0.85">
+    <text x="40" y="42" transform="rotate(-8 40 42)">🍎</text>
+    <text x="120" y="38" transform="rotate(6 120 38)">🥑</text>
+    <text x="200" y="44" transform="rotate(-5 200 44)">🍕</text>
+    <text x="280" y="40" transform="rotate(9 280 40)">🍓</text>
+
+    <text x="40" y="122" transform="rotate(7 40 122)">🥕</text>
+    <text x="120" y="118" transform="rotate(-6 120 118)">🍩</text>
+    <text x="200" y="124" transform="rotate(8 200 124)">🥛</text>
+    <text x="280" y="120" transform="rotate(-9 280 120)">🍌</text>
+
+    <text x="40" y="202" transform="rotate(-6 40 202)">🍳</text>
+    <text x="120" y="198" transform="rotate(9 120 198)">🥦</text>
+    <text x="200" y="204" transform="rotate(-8 200 204)">🍔</text>
+    <text x="280" y="200" transform="rotate(5 280 200)">🍇</text>
+
+    <text x="40" y="282" transform="rotate(9 40 282)">🥪</text>
+    <text x="120" y="278" transform="rotate(-5 120 278)">🍒</text>
+    <text x="200" y="284" transform="rotate(6 200 284)">🌽</text>
+    <text x="280" y="280" transform="rotate(-7 280 280)">🍰</text>
+  </g>
+</svg>

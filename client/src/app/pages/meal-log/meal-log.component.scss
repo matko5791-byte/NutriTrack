@@ -1,0 +1,14 @@
+.food-card {
+  cursor: pointer;
+  border: 1px solid var(--bs-border-color);
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+
+  &:hover {
+    background-color: var(--bs-tertiary-bg);
+    border-color: var(--bs-primary);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}

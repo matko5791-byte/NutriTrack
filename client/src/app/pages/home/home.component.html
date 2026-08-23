@@ -1,0 +1,84 @@
+<ng-container *ngIf="profile() as p">
+  <div class="card mb-4">
+    <div class="card-body">
+      <h2 class="h5 card-title">Calories today</h2>
+
+      <div class="d-flex justify-content-between mb-1">
+        <span class="fw-semibold">{{ totals().calories }} kcal</span>
+        <span class="text-muted">goal {{ p.dailyCalorieGoal }} kcal</span>
+      </div>
+
+      <div class="progress" role="progressbar" style="height: 1.5rem;">
+        <div
+          class="progress-bar"
+          [class.bg-danger]="isOverGoal()"
+          [class.bg-success]="!isOverGoal()"
+          [style.width.%]="caloriePercent()"
+        >
+          {{ caloriePercent() }}%
+        </div>
+      </div>
+
+      <div class="row mt-3 g-2 text-muted small text-center">
+        <div class="col-6 col-md-3">
+          <div class="fw-semibold text-body">{{ totals().carbs }} g</div>
+          Carbs
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="fw-semibold text-body">{{ totals().protein }} g</div>
+          Protein
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="fw-semibold text-body">{{ totals().fat }} g</div>
+          Fat
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="fw-semibold text-body">{{ totals().salt }} g</div>
+          Salt
+        </div>
+      </div>
+
+      <p class="text-muted small mt-3 mb-0">
+        Your goal is calculated based on a ~500 kcal/day deficit from your daily needs (TDEE).
+      </p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-12 col-lg-7">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-baseline mb-2">
+            <h2 class="h5 card-title mb-0">Weight over time</h2>
+            <span class="text-muted small" *ngIf="currentWeight() as weight">Current: {{ weight }} kg</span>
+          </div>
+          <app-weight-chart [entries]="weightEntries()"></app-weight-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h5 card-title">Log today's weight</h2>
+
+          <div class="alert alert-danger" *ngIf="weightErrorMessage">{{ weightErrorMessage }}</div>
+
+          <form [formGroup]="weightForm" (ngSubmit)="logWeight()" class="d-flex gap-2">
+            <input type="number" step="0.1" class="form-control" placeholder="Weight (kg)" formControlName="weightKg">
+            <button type="submit" class="btn btn-primary text-nowrap" [disabled]="isLoggingWeight">
+              {{ isLoggingWeight ? 'Saving...' : 'Save' }}
+            </button>
+          </form>
+          <div class="form-text text-danger" *ngIf="weightForm.get('weightKg')?.touched && weightForm.get('weightKg')?.invalid">
+            Enter a weight between 30 and 300 kg.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<p class="text-muted" *ngIf="!isLoading() && !profile()">
+  This is where your daily nutrition entries and progress will be shown.
+</p>

@@ -1,0 +1,133 @@
+<h1 class="mb-4">Log Meal</h1>
+
+<div class="mb-4">
+  <button type="button" class="btn btn-primary" (click)="openFoodPicker()" *ngIf="!showFoodPicker()">
+    + Add meal
+  </button>
+
+  <div class="card" *ngIf="showFoodPicker()">
+    <div class="card-body">
+      <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <ng-container *ngIf="!selectedFood(); else quantityPicker">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 card-title mb-0">Choose a food</h2>
+          <button type="button" class="btn-close" aria-label="Close" (click)="closeFoodPicker()"></button>
+        </div>
+
+        <input
+          type="text"
+          class="form-control mb-3"
+          placeholder="Search foods..."
+          [value]="searchTerm()"
+          (input)="updateSearch($any($event.target).value)"
+        >
+
+        <div class="mb-3">
+          <button type="button" class="btn btn-outline-primary btn-sm" (click)="openCreateFoodForm()" *ngIf="!showCreateFoodForm()">
+            + Add your own food
+          </button>
+
+          <div class="card bg-body-secondary mt-2" *ngIf="showCreateFoodForm()">
+            <div class="card-body">
+              <div class="alert alert-danger" *ngIf="createFoodErrorMessage">{{ createFoodErrorMessage }}</div>
+
+              <form [formGroup]="createFoodForm" (ngSubmit)="submitCreateFood()">
+                <div class="mb-2">
+                  <label class="form-label" for="foodName">Name</label>
+                  <input id="foodName" type="text" class="form-control" formControlName="name">
+                </div>
+
+                <div class="row g-2 mb-3">
+                  <div class="col-6 col-md-3">
+                    <label class="form-label" for="foodCalories">Calories /100g</label>
+                    <input id="foodCalories" type="number" class="form-control" formControlName="caloriesPer100g">
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <label class="form-label" for="foodProtein">Protein /100g</label>
+                    <input id="foodProtein" type="number" class="form-control" formControlName="proteinPer100g">
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <label class="form-label" for="foodCarbs">Carbs /100g</label>
+                    <input id="foodCarbs" type="number" class="form-control" formControlName="carbsPer100g">
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <label class="form-label" for="foodFat">Fat /100g</label>
+                    <input id="foodFat" type="number" class="form-control" formControlName="fatPer100g">
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <label class="form-label" for="foodSalt">Salt /100g</label>
+                    <input id="foodSalt" type="number" class="form-control" formControlName="saltPer100g">
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-outline-secondary" (click)="closeCreateFoodForm()">Cancel</button>
+                  <button type="submit" class="btn btn-primary" [disabled]="isCreatingFood">
+                    {{ isCreatingFood ? 'Saving...' : 'Save food' }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-2">
+          <div class="col-6 col-md-4 col-lg-3" *ngFor="let food of filteredFoods()">
+            <div class="card food-card h-100" (click)="selectFood(food)" role="button">
+              <div class="card-body text-center py-3">
+                {{ food.name }}
+                <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis ms-1" *ngIf="food.userId">Mine</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-muted mt-3 mb-0" *ngIf="filteredFoods().length === 0">
+          No foods match your search.
+        </p>
+      </ng-container>
+
+      <ng-template #quantityPicker>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 card-title mb-0">{{ selectedFood()?.name }}</h2>
+          <button type="button" class="btn-close" aria-label="Close" (click)="closeFoodPicker()"></button>
+        </div>
+
+        <form [formGroup]="gramsForm" (ngSubmit)="submit()" class="d-flex gap-2">
+          <input type="number" class="form-control" placeholder="Amount (g)" formControlName="grams">
+          <button type="button" class="btn btn-outline-secondary text-nowrap" (click)="backToSearch()">Back</button>
+          <button type="submit" class="btn btn-primary text-nowrap" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Saving...' : 'Add entry' }}
+          </button>
+        </form>
+        <div class="form-text text-danger" *ngIf="gramsForm.get('grams')?.touched && gramsForm.get('grams')?.invalid">
+          Enter an amount between 1 and 5000 g.
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h2 class="h5 card-title">Today's entries</h2>
+
+    <p class="text-muted mb-0" *ngIf="!isLoading() && entries().length === 0">
+      No meals logged today yet.
+    </p>
+
+    <ul class="list-group list-group-flush" *ngIf="entries().length > 0">
+      <li class="list-group-item d-flex justify-content-between align-items-center px-0" *ngFor="let entry of entries()">
+        <div>
+          <div class="fw-semibold">{{ entry.foodName }}</div>
+          <div class="text-muted small">
+            {{ entry.grams }} g &middot; {{ entry.loggedAt | date:'HH:mm' }} &middot; {{ entry.calories | number:'1.0-0' }} kcal
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeEntry(entry._id)">Remove</button>
+      </li>
+    </ul>
+  </div>
+</div>
+

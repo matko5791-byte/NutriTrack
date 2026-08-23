@@ -1,0 +1,30 @@
+$primary: #2f9e73;
+$success: #2f9e73;
+$body-bg: #f5f7f8;
+$border-radius: 0.6rem;
+$border-radius-sm: 0.45rem;
+$border-radius-lg: 0.85rem;
+$card-border-width: 0;
+$font-family-sans-serif: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+@import "bootstrap/scss/bootstrap";
+
+body {
+  min-height: 100vh;
+  background-color: $body-bg;
+  background-image:
+    linear-gradient(rgba($body-bg, 0.92), rgba($body-bg, 0.92)),
+    url("/images/food-pattern.svg");
+  background-repeat: repeat, repeat;
+  background-attachment: fixed, fixed;
+  background-size: auto, 320px auto;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.06);
+}
+
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 0.02rem;
+}

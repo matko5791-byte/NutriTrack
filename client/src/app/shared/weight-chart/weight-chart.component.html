@@ -1,0 +1,11 @@
+@if (points().length > 0) {
+  <svg [attr.viewBox]="'0 0 ' + width + ' ' + height" class="weight-chart">
+    <polyline [attr.points]="polylinePoints()" fill="none" stroke="var(--bs-primary)" stroke-width="2" />
+    @for (point of points(); track $index) {
+      <circle [attr.cx]="point.x" [attr.cy]="point.y" r="3.5" fill="var(--bs-primary)" />
+    }
+  </svg>
+} @else {
+  <p class="text-muted mb-0">No weight changes logged yet.</p>
+}
+
