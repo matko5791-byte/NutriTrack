@@ -10,7 +10,7 @@ const weightRoutes = require("./routes/weight.routes");
 const foodsRoutes = require("./routes/foods.routes");
 const mealEntriesRoutes = require("./routes/mealEntries.routes");
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 (async () => {
     await connectToDb();

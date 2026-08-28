@@ -2,8 +2,8 @@ const { MongoClient } = require("mongodb");
 
 const foodsSeed = require("./data/foods.seed");
 
-const url = process.env.MONGO_URL || "mongodb://127.0.0.1:27017";
-const dbName = process.env.DB_NAME || "nutrition_tracker";
+const url = process.env.MONGO_URL;
+const dbName = process.env.DB_NAME;
 
 let db = null;
 
