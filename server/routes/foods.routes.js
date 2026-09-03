@@ -28,6 +28,16 @@ function validateFoodPayload({ name, caloriesPer100g, proteinPer100g, carbsPer10
     return null;
 }
 
+function validateServingPayload({ name, grams }) {
+    if (!name || typeof name !== "string" || name.trim().length < 1 || name.trim().length > 40) {
+        return "Serving name must be between 1 and 40 characters long";
+    }
+    if (!Number.isFinite(grams) || grams <= 0 || grams > 2000) {
+        return "Serving amount must be between 1 and 2000 g";
+    }
+    return null;
+}
+
 router.get("/", requireAuth, async (req, res) => {
     try {
         const db = getDb();
@@ -38,7 +48,31 @@ router.get("/", requireAuth, async (req, res) => {
             .sort({ name: 1 })
             .toArray();
 
-        res.send({ foods });
+        const foodIds = foods.map(food => food._id);
+        const servings = await db.collection("food_servings")
+            .find({ foodId: { $in: foodIds }, $or: [{ userId: { $exists: false } }, { userId }] })
+            .sort({ name: 1 })
+            .toArray();
+
+        const servingsByFood = new Map();
+        for (const serving of servings) {
+            const key = serving.foodId.toString();
+            const list = servingsByFood.get(key) ?? [];
+            list.push({
+                _id: serving._id,
+                name: serving.name,
+                grams: serving.grams,
+                isCustom: !!serving.userId
+            });
+            servingsByFood.set(key, list);
+        }
+
+        const foodsWithServings = foods.map(food => ({
+            ...food,
+            servings: servingsByFood.get(food._id.toString()) ?? []
+        }));
+
+        res.send({ foods: foodsWithServings });
     } catch (e) {
         console.error(e);
         res.status(500).send({ message: "Something went wrong fetching foods" });
@@ -78,6 +112,76 @@ router.post("/", requireAuth, async (req, res) => {
     } catch (e) {
         console.error(e);
         res.status(500).send({ message: "Something went wrong creating the food" });
+    }
+});
+
+router.post("/:foodId/servings", requireAuth, async (req, res) => {
+    try {
+        if (!ObjectId.isValid(req.params.foodId)) {
+            return res.status(400).send({ message: "Invalid food id" });
+        }
+
+        const payload = { name: req.body.name, grams: Number(req.body.grams) };
+        const validationError = validateServingPayload(payload);
+        if (validationError) {
+            return res.status(400).send({ message: validationError });
+        }
+
+        const db = getDb();
+        const userId = new ObjectId(req.user.id);
+        const foodId = new ObjectId(req.params.foodId);
+
+        const food = await db.collection("foods").findOne({
+            _id: foodId,
+            $or: [{ userId: { $exists: false } }, { userId }]
+        });
+        if (!food) {
+            return res.status(404).send({ message: "Food not found" });
+        }
+
+        const serving = {
+            foodId,
+            userId,
+            name: payload.name.trim(),
+            grams: payload.grams,
+            createdAt: new Date()
+        };
+
+        const result = await db.collection("food_servings").insertOne(serving);
+
+        res.status(201).send({
+            message: "Serving added",
+            serving: { _id: result.insertedId, name: serving.name, grams: serving.grams, isCustom: true }
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).send({ message: "Something went wrong adding the serving" });
+    }
+});
+
+router.delete("/:foodId/servings/:servingId", requireAuth, async (req, res) => {
+    try {
+        if (!ObjectId.isValid(req.params.foodId) || !ObjectId.isValid(req.params.servingId)) {
+            return res.status(400).send({ message: "Invalid id" });
+        }
+
+        const db = getDb();
+        const userId = new ObjectId(req.user.id);
+
+        const result = await db.collection("food_servings").deleteOne({
+            _id: new ObjectId(req.params.servingId),
+            foodId: new ObjectId(req.params.foodId),
+            userId
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).send({ message: "Serving not found" });
+        }
+
+        res.send({ message: "Serving removed" });
+    } catch (e) {
+        console.error(e);
+        res.status(500).send({ message: "Something went wrong removing the serving" });
     }
 });
 

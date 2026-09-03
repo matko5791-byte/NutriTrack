@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { CreateFoodPayload, DailyMealsSummary, Food } from '../models/food.model';
+import { CreateFoodPayload, CreateServingPayload, DailyMealsSummary, Food, FoodServing } from '../models/food.model';
 
 @Injectable({
     providedIn: 'root'
@@ -19,6 +19,14 @@ export class MealService {
 
     createFood(payload: CreateFoodPayload): Observable<{ message: string; food: Food }> {
         return this.http.post<{ message: string; food: Food }>(this.foodsUrl, payload);
+    }
+
+    addServing(foodId: string, payload: CreateServingPayload): Observable<{ message: string; serving: FoodServing }> {
+        return this.http.post<{ message: string; serving: FoodServing }>(`${this.foodsUrl}/${foodId}/servings`, payload);
+    }
+
+    deleteServing(foodId: string, servingId: string): Observable<{ message: string }> {
+        return this.http.delete<{ message: string }>(`${this.foodsUrl}/${foodId}/servings/${servingId}`);
     }
 
     getTodaysMeals(): Observable<DailyMealsSummary> {

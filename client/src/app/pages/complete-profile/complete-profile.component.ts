@@ -24,7 +24,8 @@ export class CompleteProfileComponent {
     age: [null as number | null, [Validators.required, Validators.min(10), Validators.max(100)]],
     heightCm: [null as number | null, [Validators.required, Validators.min(100), Validators.max(250)]],
     weightKg: [null as number | null, [Validators.required, Validators.min(30), Validators.max(300)]],
-    activityLevel: ['', [Validators.required]]
+    activityLevel: ['', [Validators.required]],
+    goal: ['', [Validators.required]]
   });
 
   errorMessage: string | null = null;
@@ -47,7 +48,8 @@ export class CompleteProfileComponent {
       age: raw.age!,
       heightCm: raw.heightCm!,
       weightKg: raw.weightKg!,
-      activityLevel: raw.activityLevel as 'sedentary' | 'light' | 'moderate' | 'active'
+      activityLevel: raw.activityLevel as 'sedentary' | 'light' | 'moderate' | 'active',
+      goal: raw.goal as 'muscle_gain' | 'weight_loss' | 'maintenance'
     }).subscribe({
       next: ({ profile }) => {
         this.isSubmitting = false;

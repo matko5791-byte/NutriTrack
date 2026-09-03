@@ -3,11 +3,11 @@ const { ObjectId } = require("mongodb");
 
 const { getDb } = require("../db");
 const { requireAuth } = require("../middleware/auth.middleware");
-const { GENDERS, ACTIVITY_LEVELS, calculateBmr, calculateTdee, calculateDailyCalorieGoal } = require("../utils/calories");
+const { GENDERS, ACTIVITY_LEVELS, GOALS, calculateBmr, calculateTdee, calculateDailyCalorieGoal } = require("../utils/calories");
 
 const router = express.Router();
 
-function validateProfilePayload({ name, gender, age, heightCm, weightKg, activityLevel }) {
+function validateProfilePayload({ name, gender, age, heightCm, weightKg, activityLevel, goal }) {
     if (!name || typeof name !== "string" || name.trim().length < 2) {
         return "Name must be at least 2 characters long";
     }
@@ -25,6 +25,9 @@ function validateProfilePayload({ name, gender, age, heightCm, weightKg, activit
     }
     if (!ACTIVITY_LEVELS.includes(activityLevel)) {
         return `Activity level must be one of: ${ACTIVITY_LEVELS.join(", ")}`;
+    }
+    if (!GOALS.includes(goal)) {
+        return `Goal must be one of: ${GOALS.join(", ")}`;
     }
     return null;
 }
@@ -62,7 +65,7 @@ router.put("/me", requireAuth, async (req, res) => {
             return res.status(400).send({ message: validationError });
         }
 
-        const { name, gender, age, heightCm, weightKg, activityLevel } = payload;
+        const { name, gender, age, heightCm, weightKg, activityLevel, goal } = payload;
 
         const db = getDb();
         const userId = new ObjectId(req.user.id);
@@ -80,7 +83,7 @@ router.put("/me", requireAuth, async (req, res) => {
 
         const bmr = calculateBmr({ gender, weightKg, heightCm, age });
         const tdee = calculateTdee(bmr, activityLevel);
-        const dailyCalorieGoal = calculateDailyCalorieGoal(tdee);
+        const dailyCalorieGoal = calculateDailyCalorieGoal(tdee, goal);
 
         const profile = {
             name: name.trim(),
@@ -89,6 +92,7 @@ router.put("/me", requireAuth, async (req, res) => {
             heightCm,
             weightKg,
             activityLevel,
+            goal,
             bmr: Math.round(bmr),
             tdee: Math.round(tdee),
             dailyCalorieGoal,

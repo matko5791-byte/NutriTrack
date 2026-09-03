@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 import { ProfileService } from '../../core/services/profile.service';
-import { ActivityLevel, Profile } from '../../core/models/profile.model';
+import { ActivityLevel, Goal, Profile } from '../../core/models/profile.model';
 
 @Component({
   selector: 'app-profile',
@@ -22,8 +22,9 @@ export class ProfileComponent implements OnInit {
   profile = signal<Profile | null>(null);
   isLoading = signal(true);
 
-  activityForm = this.fb.group({
-    activityLevel: ['', [Validators.required]]
+  settingsForm = this.fb.group({
+    activityLevel: ['', [Validators.required]],
+    goal: ['', [Validators.required]]
   });
 
   saveErrorMessage: string | null = null;
@@ -41,16 +42,16 @@ export class ProfileComponent implements OnInit {
           return;
         }
         this.profile.set(profile);
-        this.activityForm.patchValue({ activityLevel: profile.activityLevel });
+        this.settingsForm.patchValue({ activityLevel: profile.activityLevel, goal: profile.goal });
         this.isLoading.set(false);
       },
       error: () => this.isLoading.set(false)
     });
   }
 
-  saveActivityLevel(): void {
-    if (this.activityForm.invalid) {
-      this.activityForm.markAllAsTouched();
+  saveSettings(): void {
+    if (this.settingsForm.invalid) {
+      this.settingsForm.markAllAsTouched();
       return;
     }
 
@@ -63,7 +64,7 @@ export class ProfileComponent implements OnInit {
     this.saveSuccess = false;
     this.isSaving = true;
 
-    const activityLevel = this.activityForm.getRawValue().activityLevel as ActivityLevel;
+    const { activityLevel, goal } = this.settingsForm.getRawValue();
 
     this.profileService.saveProfile({
       name: currentProfile.name,
@@ -71,7 +72,8 @@ export class ProfileComponent implements OnInit {
       age: currentProfile.age,
       heightCm: currentProfile.heightCm,
       weightKg: currentProfile.weightKg,
-      activityLevel
+      activityLevel: activityLevel as ActivityLevel,
+      goal: goal as Goal
     }).subscribe({
       next: ({ profile }) => {
         this.isSaving = false;

@@ -71,6 +71,20 @@
             </div>
           </div>
 
+          <div class="mb-4">
+            <label class="form-label" for="goal">Tracking goal</label>
+            <select id="goal" class="form-select" formControlName="goal">
+              <option value="" disabled selected>Select your goal</option>
+              <option value="muscle_gain">Build muscle</option>
+              <option value="weight_loss">Lose weight</option>
+              <option value="maintenance">Maintain weight</option>
+            </select>
+            <div class="form-text">We'll use this to recommend foods that fit your goal.</div>
+            <div class="form-text text-danger" *ngIf="form.get('goal')?.touched && form.get('goal')?.invalid">
+              Please select a goal.
+            </div>
+          </div>
+
           <button type="submit" class="btn btn-primary w-100" [disabled]="isSubmitting">
             {{ isSubmitting ? 'Saving...' : 'Save profile' }}
           </button>

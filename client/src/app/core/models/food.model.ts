@@ -1,3 +1,15 @@
+export interface FoodServing {
+    _id: string;
+    name: string;
+    grams: number;
+    isCustom: boolean;
+}
+
+export interface CreateServingPayload {
+    name: string;
+    grams: number;
+}
+
 export interface Food {
     _id: string;
     name: string;
@@ -7,6 +19,7 @@ export interface Food {
     fatPer100g: number;
     saltPer100g: number;
     userId?: string;
+    servings?: FoodServing[];
 }
 
 export interface CreateFoodPayload {
