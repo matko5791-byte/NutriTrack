@@ -10,22 +10,23 @@ Projekt je izrađen kao završni rad prediplomskog studija, s ciljem primjene zn
 - [Tehnologije](#-tehnologije)
 - [Struktura projekta](#-struktura-projekta)
 - [Preduvjeti](#-preduvjeti)
-- [Pokretanje projekta](#-pokretanje-projekta)
-- [Konfiguracija okoline](#-konfiguracija-okoline)
 - [API dokumentacija](#-api-dokumentacija)
+- [Deployment](#-deployment)
 - [Autor](#-autor)
 
 ## ✨ Značajke
 
 - **Registracija i prijava korisnika** uz autentifikaciju putem JWT tokena i sigurno hashiranje lozinki (bcrypt)
-- **Izrada profila** – unos spola, dobi, visine, težine i razine tjelesne aktivnosti
-- **Automatski izračun kalorijskih potreba** – BMR (bazalni metabolizam) i TDEE (ukupna dnevna potrošnja energije) prema Mifflin-St Jeor formuli, s preporučenim dnevnim ciljem kalorija
+- **Izrada profila** – unos spola, dobi, visine, težine, razine tjelesne aktivnosti i cilja (mršavljenje / povećanje mišićne mase / održavanje)
+- **Automatski izračun kalorijskih potreba** – BMR (bazalni metabolizam) i TDEE (ukupna dnevna potrošnja energije) prema Mifflin-St Jeor formuli, s dnevnim ciljem kalorija prilagođenim odabranom cilju (deficit/suficit/održavanje)
 - **Baza namirnica** – pregled i pretraga postojećih namirnica te dodavanje vlastitih (kalorije, proteini, ugljikohidrati, masti, sol na 100 g)
-- **Dnevnik obroka** – unos pojedene količine namirnice u gramima i automatski izračun nutritivnih vrijednosti
+- **Jedinice mjere (servings)** – unos obroka u gramima ili u praktičnim jedinicama (npr. "1 srednja jabuka"), uz mogućnost dodavanja i brisanja vlastitih jedinica po namirnici
+- **Preporuke namirnica prema cilju** – lista namirnica sortirana po gustoći proteina (mišićna masa), kalorijskoj gustoći (mršavljenje) ili omjeru proteina i kalorija (održavanje)
+- **Dnevnik obroka** – unos pojedene količine namirnice i automatski izračun nutritivnih vrijednosti
 - **Pregled dnevnog unosa** – usporedba unesenih kalorija/makronutrijenata s dnevnim ciljem
-- **Praćenje tjelesne težine** – unos nove težine i prikaz trenda kroz graf
-- **Ažuriranje profila** – promjena razine aktivnosti uz ponovni izračun kalorijskog cilja
-- **Zaštićene rute** – pristup stranicama ograničen je isključivo prijavljenim korisnicima (Angular route guard)
+- **Praćenje tjelesne težine** – unos nove težine i prikaz trenda kroz graf s označenim kilogramima (y-os) i datumima unosa (x-os)
+- **Ažuriranje profila** – promjena razine aktivnosti i cilja uz ponovni izračun kalorijskog cilja
+- **Zaštićene rute** – pristup stranicama ograničen je isključivo prijavljenim korisnicima (Angular route guard), dok su prijavljenim korisnicima obrnuto blokirane stranice za prijavu, registraciju i početni unos profila (ako je već popunjen)
 
 ## 🛠 Tehnologije
 
@@ -55,7 +56,7 @@ NutriTrack/
     ├── routes/               # API rute (auth, profile, foods, meal-entries, weight)
     ├── middleware/           # Autentifikacijski middleware
     ├── utils/                # Pomoćne funkcije (izračun kalorija)
-    └── data/                 # Početni (seed) podaci o namirnicama
+    └── data/                 # Početni (seed) podaci o namirnicama i jedinicama mjere
 ```
 
 ## ✅ Preduvjeti
@@ -65,51 +66,7 @@ Prije pokretanja projekta potrebno je instalirati:
 - [Node.js](https://nodejs.org/) (v18 ili novije)
 - [MongoDB](https://www.mongodb.com/try/download/community) (lokalno instaliran i pokrenut, ili konekcija na MongoDB Atlas)
 
-## 🚀 Pokretanje projekta
-
-### 1. Kloniranje repozitorija
-
-```bash
-git clone <url-repozitorija>
-cd NutriTrack
-```
-
-### 2. Pokretanje backend servera
-
-```bash
-cd server
-npm install
-npx nodemon
-```
-
-Server se pokreće na `http://localhost:3000`. Prilikom prvog pokretanja automatski se popunjava kolekcija namirnica (`foods`) početnim podacima iz `data/foods.seed.js`.
-
-### 3. Pokretanje frontend aplikacije
-
-U novom terminalu:
-
-```bash
-cd client
-npm install
-ng serve
-```
-
-Aplikacija je dostupna na `http://localhost:4200`. Zahtjevi prema `/api` automatski se preusmjeravaju (proxy) na backend server.
-
-## ⚙️ Konfiguracija okoline
-
-Backend koristi varijable okoline koje se postavljaju u `.env` datoteci unutar `server/` mape. Primjer sadržaja:
-
-| Varijabla    | Opis                                       |
-|--------------|--------------------------------------------|
-| `PORT`       | Port na kojem server sluša                 |
-| `MONGO_URL`  | Adresa MongoDB baze                        |
-| `DB_NAME`    | Naziv baze podataka                        |
-| `JWT_SECRET` | Tajni ključ za potpisivanje JWT tokena     |
-
-> ⚠️ Za produkcijsko okruženje obavezno postavite vlastitu, sigurnu i tajnu vrijednost za `JWT_SECRET`.
-
-## 📡 API dokumentacija
+##  API dokumentacija
 
 Sve rute (osim registracije i prijave) zahtijevaju autentifikaciju putem `Authorization: Bearer <token>` zaglavlja.
 
@@ -123,11 +80,20 @@ Sve rute (osim registracije i prijave) zahtijevaju autentifikaciju putem `Author
 | DELETE | `/api/profile/me`        | Brisanje profila                               |
 | GET    | `/api/weight`            | Dohvat povijesti tjelesne težine               |
 | POST   | `/api/weight`            | Unos nove izmjere težine                       |
-| GET    | `/api/foods`             | Dohvat liste namirnica                         |
+| GET    | `/api/foods`             | Dohvat liste namirnica (uključujući dostupne jedinice mjere) |
 | POST   | `/api/foods`             | Dodavanje vlastite namirnice                   |
+| POST   | `/api/foods/:foodId/servings` | Dodavanje vlastite jedinice mjere za namirnicu |
+| DELETE | `/api/foods/:foodId/servings/:servingId` | Brisanje vlastite jedinice mjere       |
 | GET    | `/api/meal-entries`      | Dohvat unesenih obroka za današnji dan         |
 | POST   | `/api/meal-entries`      | Unos novog obroka                              |
 | DELETE | `/api/meal-entries/:id`  | Brisanje unesenog obroka                       |
+
+## 🚢 Deployment
+
+Projekt je pripremljen za deployment na [Render](https://render.com) putem `render.yaml` blueprinta u korijenu repozitorija:
+
+- **`nutritrack-api`** – Node web servis (`server/`)
+- **`nutritrack-client`** – statička stranica (`client/`)
 
 ## 👤 Autor
 
