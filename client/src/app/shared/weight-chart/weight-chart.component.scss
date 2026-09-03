@@ -2,4 +2,23 @@
   width: 100%;
   height: auto;
   max-height: 260px;
+
+  .grid-line {
+    stroke: var(--bs-border-color);
+    stroke-width: 1;
+  }
+
+  .axis-label {
+    fill: var(--bs-secondary-color);
+    font-size: 10px;
+  }
+
+  .y-axis-label {
+    text-anchor: end;
+    dominant-baseline: middle;
+  }
+
+  .x-axis-label {
+    text-anchor: middle;
+  }
 }

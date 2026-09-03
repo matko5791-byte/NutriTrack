@@ -1,8 +1,19 @@
 @if (points().length > 0) {
   <svg [attr.viewBox]="'0 0 ' + width + ' ' + height" class="weight-chart">
+    @for (tick of yAxisTicks(); track tick.y) {
+      <line [attr.x1]="plotLeft" [attr.x2]="plotRight" [attr.y1]="tick.y" [attr.y2]="tick.y" class="grid-line" />
+      <text [attr.x]="plotLeft - 6" [attr.y]="tick.y" class="axis-label y-axis-label">{{ tick.label }}</text>
+    }
+
     <polyline [attr.points]="polylinePoints()" fill="none" stroke="var(--bs-primary)" stroke-width="2" />
     @for (point of points(); track $index) {
-      <circle [attr.cx]="point.x" [attr.cy]="point.y" r="3.5" fill="var(--bs-primary)" />
+      <circle [attr.cx]="point.x" [attr.cy]="point.y" r="3.5" fill="var(--bs-primary)">
+        <title>{{ point.weightKg }} kg – {{ point.dateLabel }}</title>
+      </circle>
+    }
+
+    @for (label of xAxisLabels(); track label.x) {
+      <text [attr.x]="label.x" [attr.y]="plotBottom + 18" class="axis-label x-axis-label">{{ label.label }}</text>
     }
   </svg>
 } @else {
