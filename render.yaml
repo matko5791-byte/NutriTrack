@@ -23,7 +23,7 @@ services:
     routes:
       - type: rewrite
         source: /api/*
-        destination: https://nutritrack-api.onrender.com/api/*
+        destination: https://nutritrack-api-xk1x.onrender.com/api/*
       - type: rewrite
         source: /*
         destination: /index.html
