@@ -125,15 +125,18 @@ router.delete("/me", requireAuth, async (req, res) => {
         const db = getDb();
         const userId = new ObjectId(req.user.id);
 
-        await db.collection("users").updateOne(
-            { _id: userId },
-            { $unset: { profile: "" } }
-        );
+        await Promise.all([
+            db.collection("users").deleteOne({ _id: userId }),
+            db.collection("weight_entries").deleteMany({ userId }),
+            db.collection("meal_entries").deleteMany({ userId }),
+            db.collection("food_servings").deleteMany({ userId }),
+            db.collection("foods").deleteMany({ userId })
+        ]);
 
-        res.send({ message: "Profile deleted" });
+        res.send({ message: "Account deleted" });
     } catch (e) {
         console.error(e);
-        res.status(500).send({ message: "Something went wrong deleting the profile" });
+        res.status(500).send({ message: "Something went wrong deleting the account" });
     }
 });
 

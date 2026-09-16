@@ -88,7 +88,7 @@ export class ProfileComponent implements OnInit {
   }
 
   deleteProfile(): void {
-    const confirmed = window.confirm('Are you sure you want to delete your profile?');
+    const confirmed = window.confirm('Are you sure you want to delete your account? This cannot be undone.');
     if (!confirmed) {
       return;
     }
@@ -99,8 +99,8 @@ export class ProfileComponent implements OnInit {
     this.profileService.deleteProfile().subscribe({
       next: () => {
         this.isDeleting = false;
-        this.authService.clearProfile();
-        this.router.navigate(['/complete-profile']);
+        this.authService.logout();
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         this.isDeleting = false;
