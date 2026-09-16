@@ -130,9 +130,6 @@
               (input)="updateQuantity($any($event.target).value)"
               (blur)="quantityTouched.set(true)"
             >
-            <div class="form-text" *ngIf="selectedUnitId() !== 'grams' && computedGrams() !== null">
-              = {{ computedGrams() }} g
-            </div>
             <div class="form-text text-danger" *ngIf="quantityError()">{{ quantityError() }}</div>
           </div>
           <button type="button" class="btn btn-outline-secondary text-nowrap" (click)="backToSearch()">Back</button>
